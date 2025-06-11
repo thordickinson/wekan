@@ -5,9 +5,13 @@
 .swimlane {
   background: #dedede;
   display: flex;
+  gap: 8px;
   flex-direction: row;
   overflow: auto;
   max-height: 100%;
+}
+.dragscroll {
+  padding-bottom: 30px;
 }
 .swimlane-header-menu .swimlane-header-collapse-down {
   font-size: 50%;
