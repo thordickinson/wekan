@@ -39,3 +39,4 @@ ehthumbs.db
 # Chart dependencies
 /helm/wekan/**/*.tgz
 /helm/wekan/charts
+volumes/

@@ -9,6 +9,8 @@ services:
     command: mongod --oplogSize 128
     networks:
       - wekan-dev-tier
+    ports:
+      - 27017:27017
     expose:
       - 27017
     volumes:

@@ -3,6 +3,7 @@
   "dockerComposeFile": ["docker-compose.yml", "docker-compose.extend.yml"],
   "service": "wekan-dev",
   "workspaceFolder": "/home/wekan/app",
+  "platform": "linux/amd64",
   "extensions": [
     "mutantdino.resourcemonitor",
     "editorconfig.editorconfig",
