@@ -193,6 +193,31 @@ if (Meteor.isServer) {
       fs.mkdirSync(storagePath, { recursive: true });
     }
   });
+
+  // New JSON route to download an attachment's file content by its ID
+  JsonRoutes.add('GET', '/api/attachments/:attachmentId/download', function(req, res) {
+    const attachmentId = req.params.attachmentId;
+    const attachment = ReactiveCache.getAttachment(attachmentId);
+    if (!attachment) {
+      return JsonRoutes.sendResult(res, { code: 404, data: { error: 'Attachment not found' } });
+    }
+    // Check if the user has access to the board
+    const board = ReactiveCache.getBoard(attachment.meta.boardId);
+    if (!board || !board.hasMember(req.userId)) {
+      return JsonRoutes.sendResult(res, { code: 403, data: { error: 'Access denied' } });
+    }
+    // Get the file strategy and read stream
+    const fileStrategy = fileStoreStrategyFactory.getFileStrategy(attachment, 'original');
+    const readStream = fileStrategy.getReadStream();
+    if (!readStream) {
+      return JsonRoutes.sendResult(res, { code: 404, data: { error: 'File content not found' } });
+    }
+    // Set the response headers for file download
+    res.setHeader('Content-Disposition', `attachment; filename="${attachment.name}"`);
+    res.setHeader('Content-Type', attachment.type);
+    // Pipe the read stream to the response
+    readStream.pipe(res);
+  });
 }
 
 export default Attachments;

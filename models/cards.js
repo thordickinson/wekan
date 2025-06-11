@@ -4091,6 +4091,48 @@ JsonRoutes.add('GET', '/api/boards/:boardId/cards_count', function(
       });
     },
   );
+
+  /**
+   * @operation get_card_attachments
+   * @summary Get the list of attachments of a card
+   *
+   * @param {string} boardId the board ID
+   * @param {string} cardId the card ID
+   * @return_type [{attachmentId: string,
+   *                attachmentName: string,
+   *                attachmentType: string,
+   *                url: string,
+   *                urlDownload: string,
+   *                boardId: string,
+   *                swimlaneId: string,
+   *                listId: string,
+   *                cardId: string
+   * }]
+   */
+  JsonRoutes.add('GET', '/api/boards/:boardId/cards/:cardId/attachments', function(req, res) {
+    const paramBoardId = req.params.boardId;
+    const paramCardId = req.params.cardId;
+    Authentication.checkBoardAccess(req.userId, paramBoardId);
+    JsonRoutes.sendResult(res, {
+      code: 200,
+      data: ReactiveCache
+        .getAttachments({'meta.cardId': paramCardId }, {}, true)
+        .each()
+        .map(function(attachment) {
+          return {
+            attachmentId: attachment._id,
+            attachmentName: attachment.name,
+            attachmentType: attachment.type,
+            url: attachment.link(),
+            urlDownload: `${attachment.link()}?download=true&token=`,
+            boardId: attachment.meta.boardId,
+            swimlaneId: attachment.meta.swimlaneId,
+            listId: attachment.meta.listId,
+            cardId: attachment.meta.cardId
+          };
+        }),
+    });
+  });
 }
 
 export default Cards;
